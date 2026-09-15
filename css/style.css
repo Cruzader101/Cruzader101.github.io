@@ -7,9 +7,11 @@
 :root {
   color-scheme: light;
 
-  --bg:          #fbfaf8;
+  --bg-base:          #fbfaf8;
+  --bg:          var(--bg-base);
   --bg-tint:     #f5f2ed;
-  --surface:     #ffffff;
+  --surface-base:     #ffffff;
+  --surface:     var(--surface-base);
   --surface-2:   #f3f1ec;
   --text:        #1a1917;
   --text-muted:  #5d5951;
@@ -40,9 +42,11 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --bg:          #121211;
+    --bg-base:          #121211;
+    --bg:          var(--bg-base);
     --bg-tint:     #191917;
-    --surface:     #1c1c1a;
+    --surface-base:     #1c1c1a;
+    --surface:     var(--surface-base);
     --surface-2:   #242421;
     --text:        #f0ede8;
     --text-muted:  #a9a399;
@@ -61,9 +65,11 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
 
-  --bg:          #121211;
+  --bg-base:          #121211;
+  --bg:          var(--bg-base);
   --bg-tint:     #191917;
-  --surface:     #1c1c1a;
+  --surface-base:     #1c1c1a;
+  --surface:     var(--surface-base);
   --surface-2:   #242421;
   --text:        #f0ede8;
   --text-muted:  #a9a399;
@@ -94,6 +100,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  /* Short on purpose: the scroll tint is already continuous, so this only has
+     to take the edge off a theme switch. */
+  transition: background-color 150ms linear;
 }
 
 img { max-width: 100%; display: block; }
@@ -711,6 +720,268 @@ main { flex: 1 0 auto; }
 .site-footer a { color: var(--text-muted); text-decoration: none; }
 .site-footer a:hover { color: var(--accent); text-decoration: underline; }
 
+/* Quiet hand-off from the intro into the book and album blocks below. */
+.scroll-cue {
+  margin: clamp(2.5rem, 7vw, 4.5rem) 0 0;
+  font-size: 0.73rem;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.scroll-cue::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border-firm), transparent);
+}
+
+.updated-standalone {
+  max-width: var(--page);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+  padding-bottom: 0.5rem;
+}
+
+.archive-rating {
+  display: block;
+  margin-top: 0.15rem;
+}
+.archive-rating .star { width: 14px; height: 14px; }
+.archive-rating .star svg { width: 14px; height: 14px; }
+.archive-rating .rating-value { font-size: 0.8rem; }
+
+/* ------------------------------------------------------------- showcase -- */
+
+/* The book and album blocks on the home page. Each one is a section the
+   ambient tint reads a colour from, so they get generous vertical room —
+   the colour needs space to arrive before the next one takes over. */
+
+.showcase {
+  padding-block: clamp(3.25rem, 9vw, 6.5rem);
+}
+
+.showcase-inner {
+  display: grid;
+  gap: clamp(1.75rem, 5vw, 3.75rem);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+}
+
+@media (min-width: 880px) {
+  .showcase-inner {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+  }
+  /* The album block mirrors the book block, so the two do not read as a list. */
+  .showcase.is-mirrored .showcase-media { order: 2; }
+}
+
+.showcase-media {
+  display: flex;
+  justify-content: center;
+}
+
+.showcase-kind {
+  font-size: 0.73rem;
+  font-weight: 650;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.55rem;
+}
+
+.showcase-title {
+  font-size: clamp(1.7rem, 4vw, 2.5rem);
+  margin: 0 0 0.2em;
+}
+.showcase-title a { color: inherit; text-decoration: none; }
+.showcase-title a:hover { color: var(--accent); }
+
+.showcase-creator {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+
+.showcase-note {
+  margin: 1.15rem 0 0;
+  max-width: 46ch;
+  font-size: 1.02rem;
+  line-height: 1.68;
+}
+
+.showcase-rating { margin-top: 1.1rem; }
+
+/* Plain book cover, for the reading block. */
+.book-cover {
+  width: clamp(190px, 38vw, 310px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 4px 7px 7px 4px;
+  /* A hint of a spine, so it reads as a book rather than a poster. */
+  box-shadow:
+    inset 9px 0 12px -10px rgb(0 0 0 / 0.55),
+    0 18px 38px -14px rgb(0 0 0 / 0.42);
+  background: var(--surface-2);
+}
+
+.cover-blank {
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--border-firm);
+  box-shadow: none;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* --------------------------------------------------------------- stars -- */
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.stars-icons {
+  display: inline-flex;
+  gap: 0.13rem;
+  color: var(--accent);
+}
+
+.star {
+  position: relative;
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  flex: none;
+  color: var(--border-firm);
+}
+.star svg { width: 21px; height: 21px; display: block; }
+
+/* The filled layer is clipped by width, which gives any fraction, not just halves. */
+.star-fill {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: var(--accent);
+}
+
+.rating-value {
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------- vinyl -- */
+
+/* Sleeve with the record sliding out to the right and turning. The slide and
+   the spin live on different elements because they are both transforms. */
+
+.vinyl {
+  --sleeve: clamp(175px, 33vw, 290px);
+  position: relative;
+  width: calc(var(--sleeve) * 1.72);
+  height: var(--sleeve);
+  flex: none;
+}
+
+.vinyl-sleeve {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--sleeve);
+  height: var(--sleeve);
+  object-fit: cover;
+  border-radius: 3px;
+  z-index: 2;
+  box-shadow:
+    inset 8px 0 14px -11px rgb(0 0 0 / 0.5),
+    0 16px 34px -14px rgb(0 0 0 / 0.45);
+  background: var(--surface-2);
+}
+
+.vinyl-disc-wrap {
+  position: absolute;
+  top: 2%;
+  left: 0;
+  width: calc(var(--sleeve) * 0.96);
+  height: calc(var(--sleeve) * 0.96);
+  z-index: 1;
+  transform: translateX(calc(var(--sleeve) * 0.05));
+  transition: transform 1000ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.vinyl.is-out .vinyl-disc-wrap { transform: translateX(calc(var(--sleeve) * 0.70)); }
+
+.vinyl-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    /* a soft sheen sweeping across the disc */
+    conic-gradient(from 210deg at 50% 50%,
+      rgb(255 255 255 / 0.10) 0deg, transparent 38deg,
+      transparent 150deg, rgb(255 255 255 / 0.07) 190deg,
+      transparent 240deg, transparent 360deg),
+    /* grooves */
+    repeating-radial-gradient(circle at 50% 50%,
+      rgb(255 255 255 / 0.055) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 50% 50%, #232326 0 30%, #121214 30.5% 100%);
+  box-shadow: 0 14px 30px -12px rgb(0 0 0 / 0.55);
+  animation: vinyl-spin 3.6s linear infinite;
+  animation-play-state: paused;
+}
+.vinyl.is-out .vinyl-disc { animation-play-state: running; }
+
+/* The cover art doubles as the centre label. */
+.vinyl-label {
+  width: 33%;
+  height: 33%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vinyl-label-blank {
+  width: 33%;
+  height: 33%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b0431e, #6a2a13);
+}
+
+/* Spindle hole, punched through the label. Positioned explicitly rather than
+   left to the grid — an absolutely positioned pseudo-element takes its static
+   position from the grid area, which does not land on the centre. */
+.vinyl-disc::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4.6%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.5);
+}
+
+@keyframes vinyl-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* The slid-out record is 1.72x the sleeve, so the sleeve has to shrink well
+   below half the viewport to keep the whole composition inside the padding. */
+@media (max-width: 560px) {
+  .vinyl { --sleeve: min(49vw, 205px); }
+}
+
+
 /* -------------------------------------------------------------- utility -- */
 
 .note {
@@ -744,4 +1015,10 @@ main { flex: 1 0 auto; }
     transition-duration: 0.01ms !important;
   }
   .card:hover { transform: none; }
+
+  /* The record stays slid out so the composition still reads, but it stops
+     turning and stops sliding. The scroll tint disables itself in JS. */
+  .vinyl-disc { animation: none !important; }
+  .vinyl-disc-wrap { transition: none !important; }
+  body { transition: none; }
 }

@@ -10,21 +10,28 @@
       "linkedin": ""
     }
   },
-
   "projects": [
     {
       "slug": "ps2-engine",
       "title": "PS2-Style Game Engine",
       "blurb": "A C++ engine that runs on modern PCs while deliberately self-imposing PlayStation 2 constraints.",
       "description": "Most retro-3D projects chase the PS1 look — the wobble and warp that come from affine texture mapping. This one targets the PS2 instead: perspective-correct texturing, a real z-buffer, Gouraud vertex lighting, low internal resolution, and 16-bit dithered color. Lighting and blending happen in gamma space with no linear workflow, which is the same choice the real hardware made and the reason the darks crush and the dither reads so strongly. The working insight is that \"true PS2\" is mostly a post-processing recipe on top of an otherwise ordinary renderer: get a normal textured-and-lit scene running, then squeeze it through a low-res dithered pipe. Currently through milestone 2 — a live GL 3.3 window with a render loop, a vendored glad loader, and scalar Vec3/Vec4/Mat4 math primitives under test.",
-      "tags": ["C++", "OpenGL", "CMake", "Graphics"],
+      "tags": [
+        "C++",
+        "OpenGL",
+        "CMake",
+        "Graphics"
+      ],
       "year": 2026,
       "status": "In progress",
       "image": null,
       "imageAlt": "",
       "featured": true,
       "links": [
-        { "label": "Repo", "url": "https://github.com/Cruzader101/ps2-engine" }
+        {
+          "label": "Repo",
+          "url": "https://github.com/Cruzader101/ps2-engine"
+        }
       ]
     },
     {
@@ -32,7 +39,12 @@
       "title": "Cover Song Retrieval",
       "blurb": "Ranking 15,000 performances so that actual covers of a song float to the top — built from scratch to understand why it's hard.",
       "description": "A cover can change key, tempo, and instrumentation, so the thing that survives is the harmonic progression. But comparing harmonic progressions runs straight back into the same two problems: key changes the chords, tempo changes when they land. Most of the work is finding ways to compare chord sequences while ignoring the transformations applied to them. Four methods, worked up from classical MIR to learned embeddings: raw duration as a baseline, the magnitude of a 2D Fourier transform over the whole song, Qmax alignment between sequences, and a convolutional network trained to learn the invariances directly. Each is scored on the same benchmark with MAP, MR1, and P@10 over the Da-TACOS benchmark subset. The priority was a defensible measurement rather than a state-of-the-art number — nothing is fit on the full set before splitting, since that is the leakage failure mode in this domain.",
-      "tags": ["Python", "PyTorch", "MIR", "Signal Processing"],
+      "tags": [
+        "Python",
+        "PyTorch",
+        "MIR",
+        "Signal Processing"
+      ],
       "year": 2026,
       "status": "Active",
       "image": "img/projects/cover-song-retrieval.png",
@@ -40,7 +52,10 @@
       "imageAlt": "Two cross-recurrence plots side by side: a query against its true cover shows long diagonal runs, a query against a stranger does not.",
       "featured": true,
       "links": [
-        { "label": "Repo", "url": "https://github.com/Cruzader101/cover_song_retrieval" }
+        {
+          "label": "Repo",
+          "url": "https://github.com/Cruzader101/cover_song_retrieval"
+        }
       ]
     },
     {
@@ -48,14 +63,22 @@
       "title": "Music Graph",
       "blurb": "A node graph of how similar albums are, built from the tags listeners actually put on them.",
       "description": "Inspired by Obsidian's node graph, but for records. Album-level tags and metadata come from the Last.fm API, with year data pulled from MusicBrainz because Last.fm's was unreliable. Each album becomes a row in an album-by-tag matrix, normalized so its top tag sits at 100, then weighted by TF-IDF so that rare and specific tags count for more and generic ones like \"rock\" or \"pop\" get penalized. Similarity between two albums is cosine similarity plus a weighted Jaccard per pair. Year similarity uses a Gaussian kernel rather than raw distance, both so it points the same direction as the other scores and so there's a parameter controlling how fast similarity decays over time. The frontend renders the result as an interactive force graph with kNN mode and community coloring.",
-      "tags": ["Python", "JavaScript", "TF-IDF", "Graphs"],
+      "tags": [
+        "Python",
+        "JavaScript",
+        "TF-IDF",
+        "Graphs"
+      ],
       "year": 2026,
       "status": "250 albums extracted",
       "image": "img/projects/music-graph.png",
       "imageAlt": "Force-directed graph of albums in kNN mode, nodes colored by detected community.",
       "featured": true,
       "links": [
-        { "label": "Repo", "url": "https://github.com/Cruzader101/music-graph" }
+        {
+          "label": "Repo",
+          "url": "https://github.com/Cruzader101/music-graph"
+        }
       ]
     },
     {
@@ -63,7 +86,12 @@
       "title": "Depression Screening in a Community Clinic",
       "blurb": "How much more common is a positive depression screen in a community clinic than among Hispanic adults nationally?",
       "description": "A clinic cohort screened with the PHQ-2, compared against Hispanic adults nationally in NHANES. Because NHANES is a complex multistage sample, the national estimate is design-based and uses the MEC weight rather than a naive proportion — comparing a raw clinic rate against an unweighted NHANES rate would not be a like-for-like comparison. Beyond the headline prevalence gap, the analysis asks what predicts a positive screen inside the cohort, looks at which symptoms co-occur, follows the gap between screening positive and reaching a diagnosis, and runs leave-one-out sensitivity checks so no single symptom is quietly carrying a result.",
-      "tags": ["Python", "statsmodels", "NHANES", "Biostatistics"],
+      "tags": [
+        "Python",
+        "statsmodels",
+        "NHANES",
+        "Biostatistics"
+      ],
       "year": 2026,
       "status": "Analysis complete",
       "image": "img/projects/fwfhp-data.png",
@@ -73,44 +101,47 @@
       "links": []
     }
   ],
-
   "now": {
     "updated": "2026-09-15",
     "book": {
       "title": "TODO: the book you're reading",
       "author": "TODO: author",
-      "cover": "",
-      "coverAlt": "",
+      "cover": "img/covers/book-placeholder.jpg",
+      "coverAlt": "TODO: describe the cover — replace this when you swap in the real one.",
+      "rating": 4.5,
       "note": "TODO: a sentence or two — why you picked it up, or what's landing so far. This doesn't need to be a review.",
-      "link": ""
+      "link": "",
+      "tint": null
     },
     "album": {
       "title": "TODO: the album",
       "artist": "TODO: artist",
-      "cover": "",
-      "coverAlt": "",
+      "cover": "img/covers/album-placeholder.jpg",
+      "coverAlt": "TODO: describe the cover — replace this when you swap in the real one.",
+      "rating": 5,
       "note": "TODO: what you like about it. Be specific — a track, a texture, a moment.",
-      "link": ""
+      "link": "",
+      "tint": null
     }
   },
-
   "archive": [
     {
       "type": "book",
       "title": "TODO: a book you finished earlier",
       "creator": "Author",
       "finished": "2026-08",
-      "note": "One line. Delete this entry once you have real ones."
+      "note": "One line. Delete this entry once you have real ones.",
+      "rating": 4
     },
     {
       "type": "album",
       "title": "TODO: an album from earlier",
       "creator": "Artist",
       "finished": "2026-07",
-      "note": "One line. Delete this entry once you have real ones."
+      "note": "One line. Delete this entry once you have real ones.",
+      "rating": 4
     }
   ],
-
   "posts": [
     {
       "slug": "hello",

@@ -25,7 +25,7 @@
     <nav class="site-nav" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="projects.html">Projects</a>
-      <a href="now.html">Now</a>
+      <a href="now.html">Archive</a>
       <a href="writing.html">Writing</a>
       <button class="theme-toggle" type="button" aria-label="Switch theme">
         <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -45,28 +45,38 @@
 <main id="main">
 
   <section class="hero">
-    <div class="wrap hero-inner">
-      <div>
-        <h1 data-profile-name>Cruz Maldonado</h1>
-        <p class="hero-tagline" data-tagline></p>
-        <p class="hero-blurb" data-blurb></p>
-        <ul class="hero-links">
-          <li><a class="btn btn-primary" href="projects.html">See the projects</a></li>
-          <li><a class="btn" data-link="github" rel="noopener">GitHub</a></li>
-          <li><a class="btn" data-link="email">Email</a></li>
-          <li><a class="btn" data-link="linkedin" rel="noopener">LinkedIn</a></li>
-        </ul>
-      </div>
-
-      <aside class="now-peek" aria-labelledby="now-peek-head">
-        <h2 id="now-peek-head">Currently</h2>
-        <ul data-now-peek></ul>
-        <a class="more" href="now.html">More on what I'm into &rarr;</a>
-      </aside>
+    <div class="wrap">
+      <h1 data-profile-name>Cruz Maldonado</h1>
+      <p class="hero-tagline" data-tagline></p>
+      <p class="hero-blurb" data-blurb></p>
+      <ul class="hero-links">
+        <li><a class="btn btn-primary" href="#projects">See the projects</a></li>
+        <li><a class="btn" data-link="github" rel="noopener">GitHub</a></li>
+        <li><a class="btn" data-link="email">Email</a></li>
+        <li><a class="btn" data-link="linkedin" rel="noopener">LinkedIn</a></li>
+      </ul>
+      <p class="scroll-cue" aria-hidden="true">What I'm into right now</p>
     </div>
   </section>
 
-  <section class="section">
+  <!-- data-ambient: the background tint samples this block's cover art. -->
+  <section class="showcase" data-ambient>
+    <div class="wrap showcase-inner">
+      <div class="showcase-media" data-showcase-media></div>
+      <div data-showcase-body></div>
+    </div>
+  </section>
+
+  <section class="showcase is-mirrored" data-ambient>
+    <div class="wrap showcase-inner">
+      <div class="showcase-media" data-showcase-media></div>
+      <div data-showcase-body></div>
+    </div>
+  </section>
+
+  <p class="updated updated-standalone" data-now-updated></p>
+
+  <section class="section" id="projects">
     <div class="wrap">
       <div class="section-head">
         <h2>Selected projects</h2>
@@ -91,6 +101,7 @@
 
 <script src="js/site.js"></script>
 <script src="js/render.js"></script>
+<script src="js/ambience.js"></script>
 <script>
 Site.page((data) => {
   const p = data.profile || {};
@@ -99,13 +110,31 @@ Site.page((data) => {
   if (p.tagline) tagline.textContent = p.tagline; else tagline.remove();
   if (p.blurb) blurb.textContent = p.blurb; else blurb.remove();
 
+  const [bookSection, albumSection] = document.querySelectorAll('.showcase');
+  Render.showcase(bookSection, 'book', (data.now || {}).book);
+  Render.showcase(albumSection, 'album', (data.now || {}).album);
+  Render.armVinyl();
+
+  const stamp = document.querySelector('[data-now-updated]');
+  const updated = (data.now || {}).updated;
+  if (updated) {
+    stamp.replaceChildren(
+      document.createTextNode('Picks updated '),
+      Object.assign(document.createElement('time'), { textContent: Site.fmtDate(updated) })
+    );
+    const iso = Site.isoAttr(updated);
+    if (iso) stamp.querySelector('time').setAttribute('datetime', iso);
+  } else {
+    stamp.remove();
+  }
+
   const featured = (data.projects || []).filter((x) => x.featured);
   Render.projects(
     document.querySelector('[data-featured-projects]'),
     featured.length ? featured : (data.projects || []).slice(0, 3)
   );
 
-  Render.nowPeek(document.querySelector('[data-now-peek]'), data);
+  Ambience.init();
 });
 </script>
 

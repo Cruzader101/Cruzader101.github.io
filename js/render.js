@@ -124,81 +124,149 @@ const Render = (() => {
     apply('');
   }
 
-  /* ----------------------------------------------------------------- now -- */
+  /* --------------------------------------------------------------- stars -- */
 
-  const NOW_SHAPE = {
-    book: { kind: 'Reading', creatorKey: 'author', cls: 'is-book', blank: 'No cover yet' },
-    album: { kind: 'Listening to', creatorKey: 'artist', cls: 'is-album', blank: 'No cover yet' }
-  };
+  const STAR_PATH = 'M12 2.6l2.95 5.98 6.6.96-4.775 4.655 1.127 6.574L12 17.67'
+    + 'l-5.902 3.1 1.127-6.573L2.45 9.54l6.6-.96L12 2.6z';
 
-  function nowCard(type, item) {
-    const shape = NOW_SHAPE[type];
-    const cover = clean(item.cover);
+  function starSvg() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', STAR_PATH);
+    path.setAttribute('fill', 'currentColor');
+    svg.append(path);
+    return svg;
+  }
 
-    const art = cover
+  /* Five stars, each filled by clipping an overlay to a width — so 4.5 works,
+     and so would 4.2 if the scale ever changes. */
+  function stars(value) {
+    const score = Math.max(0, Math.min(5, Number(value)));
+    if (!Number.isFinite(score)) return null;
+
+    const icons = el('span', { class: 'stars-icons', attrs: { 'aria-hidden': 'true' } });
+    for (let i = 0; i < 5; i++) {
+      const filled = Math.max(0, Math.min(1, score - i));
+      const star = el('span', { class: 'star' }, starSvg());
+      if (filled > 0) {
+        const fill = el('span', { class: 'star-fill' }, starSvg());
+        fill.style.width = `${filled * 100}%`;
+        star.append(fill);
+      }
+      icons.append(star);
+    }
+
+    // The number is the accessible version; the stars are decorative.
+    const rounded = Number.isInteger(score) ? String(score) : score.toFixed(1);
+    return el('span', { class: 'stars' },
+      icons,
+      el('span', { class: 'rating-value', text: `${rounded} out of 5` })
+    );
+  }
+
+  /* ------------------------------------------------------------ showcase -- */
+
+  function cover(item, { className, blankText }) {
+    const src = clean(item.cover);
+    if (!src) {
+      return el('div', {
+        class: `${className} cover-blank`,
+        text: blankText,
+        attrs: { 'aria-hidden': 'true' }
+      });
+    }
+    return el('img', {
+      class: className,
+      attrs: {
+        src,
+        alt: item.coverAlt || `Cover of ${item.title}.`,
+        decoding: 'async',
+        'data-tint-source': ''
+      }
+    });
+  }
+
+  /* The record: sleeve in front, disc sliding out behind it and turning. */
+  function vinyl(item) {
+    const src = clean(item.cover);
+    const label = src
       ? el('img', {
-          class: 'now-cover',
+          class: 'vinyl-label',
+          attrs: { src, alt: '', decoding: 'async', 'aria-hidden': 'true' }
+        })
+      : el('div', { class: 'vinyl-label-blank', attrs: { 'aria-hidden': 'true' } });
+
+    const sleeve = src
+      ? el('img', {
+          class: 'vinyl-sleeve',
           attrs: {
-            src: cover,
+            src,
             alt: item.coverAlt || `Cover of ${item.title}.`,
-            loading: 'lazy',
-            decoding: 'async'
+            decoding: 'async',
+            'data-tint-source': ''
           }
         })
-      : el('div', { class: 'now-cover is-blank', text: shape.blank, attrs: { 'aria-hidden': 'true' } });
+      : el('div', { class: 'vinyl-sleeve cover-blank', text: 'No cover yet', attrs: { 'aria-hidden': 'true' } });
 
-    const head = el('div', {},
-      el('p', { class: 'now-kind', text: shape.kind }),
-      el('h2', { class: 'now-title' },
+    return el('div', { class: 'vinyl' },
+      el('div', { class: 'vinyl-disc-wrap' }, el('div', { class: 'vinyl-disc' }, label)),
+      sleeve
+    );
+  }
+
+  const SHOWCASE = {
+    book: { kind: 'Currently reading', creatorKey: 'author' },
+    album: { kind: 'On repeat', creatorKey: 'artist' }
+  };
+
+  function showcase(section, type, item) {
+    if (!item) { section.remove(); return; }
+    const shape = SHOWCASE[type];
+    section.setAttribute('aria-label', shape.kind);
+
+    const media = section.querySelector('[data-showcase-media]');
+    media.replaceChildren(
+      type === 'album'
+        ? vinyl(item)
+        : cover(item, { className: 'book-cover', blankText: 'No cover yet' })
+    );
+
+    const body = section.querySelector('[data-showcase-body]');
+    body.replaceChildren(
+      el('p', { class: 'showcase-kind', text: shape.kind }),
+      el('h2', { class: 'showcase-title' },
         clean(item.link)
           ? el('a', { text: item.title, attrs: { href: item.link, rel: 'noopener' } })
           : document.createTextNode(item.title || '')
       ),
-      item[shape.creatorKey]
-        ? el('p', { class: 'now-creator', text: item[shape.creatorKey] })
-        : null
+      item[shape.creatorKey] ? el('p', { class: 'showcase-creator', text: item[shape.creatorKey] }) : null,
+      item.rating != null ? el('div', { class: 'showcase-rating' }, stars(item.rating)) : null,
+      item.note ? el('p', { class: 'showcase-note', text: item.note }) : null
     );
 
-    return el('article', { class: `now-card ${shape.cls}` },
-      art,
-      head,
-      item.note ? el('p', { class: 'now-note', text: item.note }) : null
-    );
+    if (item.tint) section.dataset.tint = item.tint;
   }
 
-  function now(container, data) {
-    const n = data.now || {};
-    const cards = [];
-    if (n.book) cards.push(nowCard('book', n.book));
-    if (n.album) cards.push(nowCard('album', n.album));
-    container.replaceChildren(...cards);
+  /* Slides the record out once the block is actually on screen, so the motion
+     happens where it can be seen rather than before the reader arrives. */
+  function armVinyl() {
+    const discs = [...document.querySelectorAll('.vinyl')];
+    if (!discs.length) return;
 
-    const stamp = document.querySelector('[data-now-updated]');
-    if (stamp && n.updated) {
-      stamp.replaceChildren(
-        document.createTextNode('Updated '),
-        el('time', { text: fmtDate(n.updated), attrs: { datetime: isoAttr(n.updated) } })
-      );
+    if (!('IntersectionObserver' in window)) {
+      discs.forEach((d) => d.classList.add('is-out'));
+      return;
     }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => entry.target.classList.toggle('is-out', entry.isIntersecting));
+    }, { threshold: 0.35 });
+    discs.forEach((d) => io.observe(d));
   }
 
-  /* Compact two-line version of "now" for the home page hero. */
-  function nowPeek(container, data) {
-    const n = data.now || {};
-    const rows = [];
-    for (const [type, item] of [['book', n.book], ['album', n.album]]) {
-      if (!item || !item.title) continue;
-      const shape = NOW_SHAPE[type];
-      rows.push(el('li', {},
-        el('span', { class: 'kind', text: type === 'book' ? 'Book' : 'Album' }),
-        el('span', {},
-          el('span', { class: 'what', text: item.title }),
-          el('span', { class: 'who', text: item[shape.creatorKey] || '' })
-        )
-      ));
-    }
-    container.replaceChildren(...rows);
-  }
+  /* ------------------------------------------------------------- archive -- */
 
   function archive(container, list) {
     if (!list?.length) {
@@ -210,6 +278,7 @@ const Render = (() => {
       el('span', {},
         el('span', { class: 'archive-what', text: item.title || '' }),
         item.creator ? el('span', { class: 'archive-who', text: ` — ${item.creator}` }) : null,
+        item.rating != null ? el('span', { class: 'archive-rating' }, stars(item.rating)) : null,
         item.note ? el('span', { class: 'archive-note', text: item.note }) : null
       ),
       el('span', { class: 'archive-when' },
@@ -237,5 +306,9 @@ const Render = (() => {
     )));
   }
 
-  return { projects, projectCard, projectFilters, now, nowPeek, archive, postList };
+  return {
+    projects, projectCard, projectFilters,
+    stars, showcase, armVinyl,
+    archive, postList
+  };
 })();

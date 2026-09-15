@@ -17,27 +17,67 @@ Then visit <http://localhost:8000>.
 
 ## Changing the book or the album
 
-Open `data/site.json`, edit the `now` block, and bump `updated` to today:
+These are the two blocks the home page scrolls through. Open `data/site.json`,
+edit the `now` block, and bump `updated` to today:
 
 ```json
 "now": {
   "updated": "2026-09-15",
-  "book":  { "title": "...", "author": "...", "cover": "img/covers/book.jpg", "note": "..." },
-  "album": { "title": "...", "artist": "...", "cover": "img/covers/album.jpg", "note": "..." }
+  "book": {
+    "title": "...", "author": "...",
+    "cover": "img/covers/your-book.jpg",
+    "coverAlt": "describe the cover",
+    "rating": 4.5,
+    "note": "...",
+    "link": "",
+    "tint": null
+  },
+  "album": { "title": "...", "artist": "...", "cover": "...", "rating": 5, "...": "..." }
 }
 ```
 
-`cover` is optional — leave it as `""` and a dashed placeholder shows instead. If you do
-add art, put the file in `img/covers/` and fill in `coverAlt` with a real description.
-Book covers are displayed at 2:3, album art at 1:1.
+- **`rating`** is out of 5 and takes halves — `4.5` renders four and a half stars.
+  Any fraction works (`4.2` fills the fifth star 20%). Leave it out to show no rating.
+- **`cover`** points at a file in `img/covers/`. The book is shown at 2:3, the album
+  at 1:1, and the album art doubles as the label on the spinning record.
+  **The two files there now are generated placeholders — replace them.**
+- **`coverAlt`** is the alt text. Write a real description; it is what a screen reader
+  announces and what shows if the file goes missing.
+- **`tint`** overrides the background colour for that block, as a hex string like
+  `"#7a4b2a"`. Leave it `null` and the colour is sampled from the cover art instead,
+  which is usually what you want.
 
-When you move on, cut the old entry into the `archive` array so the history accumulates:
+When you move on, cut the old entry into the `archive` array — that is what
+`now.html` lists:
 
 ```json
-{ "type": "book", "title": "...", "creator": "...", "finished": "2026-08", "note": "..." }
+{ "type": "book", "title": "...", "creator": "...", "finished": "2026-08",
+  "rating": 4, "note": "..." }
 ```
 
 `finished` accepts `YYYY-MM` or a full `YYYY-MM-DD`.
+
+## How the scrolling background works
+
+`js/ambience.js` samples a dominant colour from each cover, then pushes it to a fixed
+lightness and a capped saturation for the current theme. The hue survives; the
+lightness does not. That is deliberate — it means no cover, however saturated, can
+drag the background somewhere that text stops being readable. Every text colour was
+checked against the tinted background in both themes and clears WCAG AA, though that
+was measured with the placeholder covers — worth a re-check if you drop in art that
+is far more saturated.
+
+As you scroll, the background interpolates continuously between the colours of the
+blocks either side of the viewport centre, and returns to the plain theme background
+before the projects grid.
+
+If the reader's OS asks for reduced motion, the colour stays but stops following the
+scroll: each block's tint settles in as that block reaches the middle of the screen,
+and the record slides out but does not turn. Nothing is lost, it just stops moving
+continuously.
+
+If a cover fails to load, or the browser blocks reading pixels from it, that block
+falls back to the untinted background rather than breaking.
 
 ## Adding a project
 
@@ -63,14 +103,15 @@ executed.
 ## Layout
 
 ```
-index.html      hero, featured projects, "currently" panel
+index.html      intro, then the book and album blocks, then featured projects
 projects.html   all projects, filterable by tag
-now.html        current book and album, then the archive
+now.html        the archive of past books and albums
 writing.html    post index
 post.html       post reader (?p=slug)
 css/style.css   design tokens, light and dark, all components
 js/site.js      content loading, page chrome, theme, helpers
-js/render.js    card, now, archive, and post-list renderers
+js/render.js    cards, the book/album blocks, stars, the record, archive, posts
+js/ambience.js  scroll-driven background tint sampled from the cover art
 js/md.js        Markdown subset renderer
 data/site.json  all content
 ```
@@ -87,5 +128,7 @@ these files as they are.
   `python -c "import json; json.load(open('data/site.json', encoding='utf-8'))"`
 - The theme follows the operating system until someone uses the toggle, after which
   their choice is remembered in `localStorage`.
+- The record's slide and spin are driven by an IntersectionObserver, so they run
+  when the block is actually on screen rather than before anyone has scrolled to it.
 - Every string from `site.json` is inserted as text, not markup, so an angle bracket
   in a blurb cannot break the page.
