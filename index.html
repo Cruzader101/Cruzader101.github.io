@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cruz Maldonado</title>
+<meta name="description" content="Projects in graphics, music information retrieval, and health data — plus what I'm reading and listening to.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+<script>
+  // Applies a stored theme choice before first paint, so there is no flash.
+  try {
+    var t = localStorage.getItem('cm-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" data-profile-name>Cruz Maldonado</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="now.html">Now</a>
+      <a href="writing.html">Writing</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <h1 data-profile-name>Cruz Maldonado</h1>
+        <p class="hero-tagline" data-tagline></p>
+        <p class="hero-blurb" data-blurb></p>
+        <ul class="hero-links">
+          <li><a class="btn btn-primary" href="projects.html">See the projects</a></li>
+          <li><a class="btn" data-link="github" rel="noopener">GitHub</a></li>
+          <li><a class="btn" data-link="email">Email</a></li>
+          <li><a class="btn" data-link="linkedin" rel="noopener">LinkedIn</a></li>
+        </ul>
+      </div>
+
+      <aside class="now-peek" aria-labelledby="now-peek-head">
+        <h2 id="now-peek-head">Currently</h2>
+        <ul data-now-peek></ul>
+        <a class="more" href="now.html">More on what I'm into &rarr;</a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Selected projects</h2>
+        <a href="projects.html">All projects &rarr;</a>
+      </div>
+      <ul class="cards" data-featured-projects></ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>&copy; <span data-year></span> <span data-profile-name>Cruz Maldonado</span></p>
+    <ul>
+      <li><a data-link="github" rel="noopener">GitHub</a></li>
+      <li><a data-link="email">Email</a></li>
+      <li><a data-link="linkedin" rel="noopener">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="js/site.js"></script>
+<script src="js/render.js"></script>
+<script>
+Site.page((data) => {
+  const p = data.profile || {};
+  const tagline = document.querySelector('[data-tagline]');
+  const blurb = document.querySelector('[data-blurb]');
+  if (p.tagline) tagline.textContent = p.tagline; else tagline.remove();
+  if (p.blurb) blurb.textContent = p.blurb; else blurb.remove();
+
+  const featured = (data.projects || []).filter((x) => x.featured);
+  Render.projects(
+    document.querySelector('[data-featured-projects]'),
+    featured.length ? featured : (data.projects || []).slice(0, 3)
+  );
+
+  Render.nowPeek(document.querySelector('[data-now-peek]'), data);
+});
+</script>
+
+</body>
+</html>

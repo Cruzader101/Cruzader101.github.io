@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Cruz Maldonado</title>
+<meta name="description" content="Graphics, music information retrieval, and health data projects.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9672;</text></svg>">
+<script>
+  // Applies a stored theme choice before first paint, so there is no flash.
+  try {
+    var t = localStorage.getItem('cm-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" data-profile-name>Cruz Maldonado</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="now.html">Now</a>
+      <a href="writing.html">Writing</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="section">
+    <div class="wrap">
+      <p class="eyebrow">Projects</p>
+      <h1>Things I've built</h1>
+      <p class="hero-blurb">Graphics, music information retrieval, and health data. Each one
+        started as a question I wanted a defensible answer to rather than a demo.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2 class="visually-hidden">Filter by tag</h2>
+      <ul class="filters" data-filters aria-label="Filter projects by tag"></ul>
+      <p class="visually-hidden" role="status" aria-live="polite" data-filter-status></p>
+      <ul class="cards cards-wide" data-all-projects></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>&copy; <span data-year></span> <span data-profile-name>Cruz Maldonado</span></p>
+    <ul>
+      <li><a data-link="github" rel="noopener">GitHub</a></li>
+      <li><a data-link="email">Email</a></li>
+      <li><a data-link="linkedin" rel="noopener">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="js/site.js"></script>
+<script src="js/render.js"></script>
+<script>
+Site.page((data) => {
+  const list = data.projects || [];
+  const grid = document.querySelector('[data-all-projects]');
+  Render.projects(grid, list, { detailed: true });
+  Render.projectFilters(
+    document.querySelector('[data-filters]'),
+    list,
+    grid,
+    document.querySelector('[data-filter-status]')
+  );
+});
+</script>
+</body>
+</html>

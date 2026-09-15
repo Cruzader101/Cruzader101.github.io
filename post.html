@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post — Cruz Maldonado</title>
+<meta name="description" content="A post.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#9672;</text></svg>">
+<script>
+  // Applies a stored theme choice before first paint, so there is no flash.
+  try {
+    var t = localStorage.getItem('cm-theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {}
+</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" data-profile-name>Cruz Maldonado</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="projects.html">Projects</a>
+      <a href="now.html">Now</a>
+      <a href="writing.html">Writing</a>
+      <button class="theme-toggle" type="button" aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="section">
+    <div class="wrap">
+      <a class="back-link" href="writing.html">All posts</a>
+      <header class="post-header">
+        <h1 data-post-title>Loading&hellip;</h1>
+        <time class="post-date" data-post-date></time>
+      </header>
+      <article class="prose" data-post-body></article>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>&copy; <span data-year></span> <span data-profile-name>Cruz Maldonado</span></p>
+    <ul>
+      <li><a data-link="github" rel="noopener">GitHub</a></li>
+      <li><a data-link="email">Email</a></li>
+      <li><a data-link="linkedin" rel="noopener">LinkedIn</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script src="js/site.js"></script>
+<script src="js/md.js"></script>
+<script>
+Site.page(async (data) => {
+  const slug = new URLSearchParams(location.search).get('p');
+  const titleEl = document.querySelector('[data-post-title]');
+  const dateEl = document.querySelector('[data-post-date]');
+  const bodyEl = document.querySelector('[data-post-body]');
+
+  // Only slugs listed in site.json are fetchable, which keeps the ?p= value
+  // from being used to reach arbitrary paths.
+  const post = (data.posts || []).find((x) => x.slug === slug);
+  if (!post) {
+    document.title = 'Post not found';
+    titleEl.textContent = 'Post not found';
+    bodyEl.append(Object.assign(document.createElement('p'), {
+      textContent: 'That post does not exist. Try the list of all posts.'
+    }));
+    return;
+  }
+
+  document.title = post.title + ' — Cruz Maldonado';
+  titleEl.textContent = post.title;
+  dateEl.textContent = Site.fmtDate(post.date);
+  const iso = Site.isoAttr(post.date);
+  if (iso) dateEl.setAttribute('datetime', iso);
+
+  const res = await fetch('posts/' + encodeURIComponent(post.slug) + '.md', { cache: 'no-cache' });
+  if (!res.ok) throw new Error('posts/' + post.slug + '.md -> HTTP ' + res.status);
+  bodyEl.innerHTML = Markdown.render(await res.text());
+});
+</script>
+</body>
+</html>
