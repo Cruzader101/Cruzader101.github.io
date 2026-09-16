@@ -5,6 +5,11 @@
    blends continuously between the colours of the sections either side of the
    viewport centre.
 
+   The same colours also drive a backdrop: each cover is painted full-bleed
+   behind the page, blurred past recognition, and faded in and out as its block
+   passes the viewport centre. The art is the wallpaper; the real cover is still
+   shown, sharp, inside the block.
+
    Two rules keep this from wrecking legibility:
    - A sampled colour is never used raw. It is pushed to a fixed lightness and
      a capped saturation for the active theme, so it reads as a tint of the
@@ -23,7 +28,12 @@ const Ambience = (() => {
     dark: { l: 10.5, maxS: 34, surfaceL: 14, surfaceS: 26 }
   };
 
+  // How far a backdrop is allowed to come up, per theme. Low on purpose: this
+  // sits under body text, so it has to stay wallpaper rather than become image.
+  const ART_OPACITY = { light: 0.26, dark: 0.3 };
+
   let sections = [];
+  let stage = null;
   let ticking = false;
   // 'scroll'   — the tint is interpolated continuously against scroll position.
   // 'discrete' — reduced-motion: the same tints, but they settle per section via
@@ -138,6 +148,47 @@ const Ambience = (() => {
     return null;
   }
 
+  /* ----------------------------------------------------------- backdrop -- */
+
+  /* One fixed layer per ambient block, each holding that block's cover art.
+     They are stacked and cross-faded by opacity, so nothing has to be swapped
+     out mid-scroll and the browser can keep them on their own compositor
+     layers. Built once; measure() only refreshes the sources. */
+  function buildStage() {
+    if (stage) return stage;
+    stage = document.createElement('div');
+    stage.className = 'ambient-stage';
+    stage.setAttribute('aria-hidden', 'true');
+    document.body.prepend(stage);
+    return stage;
+  }
+
+  function artLayerFor(section) {
+    const img = section.querySelector('[data-tint-source]');
+    const src = img && img.getAttribute('src');
+    if (!src) return null;
+
+    let layer = section._ambientLayer;
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.className = 'ambient-art';
+      buildStage().append(layer);
+      section._ambientLayer = layer;
+    }
+    layer.style.backgroundImage = `url("${src.replace(/"/g, '%22')}")`;
+    return layer;
+  }
+
+  function paintArt(entry, amount) {
+    if (!entry.layer) return;
+    const max = ART_OPACITY[Site.activeTheme()] ?? ART_OPACITY.dark;
+    const t = Math.max(0, Math.min(1, amount));
+    entry.layer.style.opacity = (t * max).toFixed(3);
+    // A little drift, so the wallpaper does not sit perfectly still behind
+    // moving text. Scale stays above 1 so the blur never exposes an edge.
+    entry.layer.style.transform = `scale(${(1.14 - t * 0.06).toFixed(3)}) translate3d(0, ${((1 - t) * 1.6).toFixed(2)}%, 0)`;
+  }
+
   /* ------------------------------------------------------------- scroll -- */
 
   function baseColors() {
@@ -159,6 +210,7 @@ const Ambience = (() => {
       const raw = colorFor(el);
       return {
         el,
+        layer: artLayerFor(el),
         color: raw ? toTint(raw, theme) : neutral,
         surface: raw ? toSurfaceTint(raw, theme) : neutralSurface
       };
@@ -218,14 +270,34 @@ const Ambience = (() => {
       }
       const chosen = (best && tinted.find((s) => s.el === best)) || neutral;
       if (chosen) paint(chosen.color, chosen.surface);
+      tinted.forEach((s) => paintArt(s, s === chosen ? 1 : 0));
     }, { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.01, 0.5, 1] });
 
     tinted.forEach((s) => observer.observe(s.el));
   }
 
+  /* How present a block is: 1 when its centre is at the viewport centre, 0 once
+     it is a little over half a screen away from touching. The falloff is eased
+     so the hand-off between two covers has no visible seam. */
+  function presence(entry) {
+    if (!entry.el) return 0;
+    const r = entry.el.getBoundingClientRect();
+    const centre = window.innerHeight / 2;
+    const distance = Math.abs(r.top + r.height / 2 - centre);
+    const reach = r.height / 2 + window.innerHeight * 0.5;
+    const t = Math.max(0, 1 - distance / Math.max(1, reach));
+    return t * t * (3 - 2 * t);
+  }
+
+  function updateArt() {
+    sections.forEach((s) => paintArt(s, presence(s)));
+  }
+
   function update() {
     ticking = false;
     if (mode !== 'scroll' || sections.length < 2) return;
+
+    updateArt();
 
     const focus = window.scrollY + window.innerHeight / 2;
     const points = sections

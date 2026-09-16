@@ -222,6 +222,25 @@ const Render = (() => {
     album: { kind: 'On repeat', creatorKey: 'artist' }
   };
 
+  /* Favourite tracks off the album. Accepts either a list or one comma-separated
+     string, since that is the shape a hand-edited site.json tends to end up in. */
+  function favorites(value) {
+    const list = (Array.isArray(value) ? value : String(value || '').split(','))
+      .map((t) => clean(String(t)).trim())
+      .filter(Boolean);
+    if (!list.length) return null;
+
+    return el('div', { class: 'showcase-favorites' },
+      el('p', { class: 'favorites-label', text: 'Favorite tracks' }),
+      el('ol', { class: 'favorites-list' },
+        list.map((track, i) => el('li', {},
+          el('span', { class: 'favorites-num', text: String(i + 1).padStart(2, '0') }),
+          el('span', { class: 'favorites-track', text: track })
+        ))
+      )
+    );
+  }
+
   function showcase(section, type, item) {
     if (!item) { section.remove(); return; }
     const shape = SHOWCASE[type];
@@ -235,7 +254,9 @@ const Render = (() => {
     );
 
     const body = section.querySelector('[data-showcase-body]');
-    body.replaceChildren(
+    // replaceChildren() would stringify a null into the literal text "null",
+    // so the optional rows are filtered out rather than passed through.
+    body.replaceChildren(...[
       el('p', { class: 'showcase-kind', text: shape.kind }),
       el('h2', { class: 'showcase-title' },
         clean(item.link)
@@ -244,8 +265,9 @@ const Render = (() => {
       ),
       item[shape.creatorKey] ? el('p', { class: 'showcase-creator', text: item[shape.creatorKey] }) : null,
       item.rating != null ? el('div', { class: 'showcase-rating' }, stars(item.rating)) : null,
-      item.note ? el('p', { class: 'showcase-note', text: item.note }) : null
-    );
+      item.note ? el('p', { class: 'showcase-note', text: item.note }) : null,
+      type === 'album' ? favorites(item.favorites) : null
+    ].filter(Boolean));
 
     if (item.tint) section.dataset.tint = item.tint;
   }
@@ -308,7 +330,7 @@ const Render = (() => {
 
   return {
     projects, projectCard, projectFilters,
-    stars, showcase, armVinyl,
+    stars, showcase, favorites, armVinyl,
     archive, postList
   };
 })();

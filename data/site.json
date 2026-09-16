@@ -1,8 +1,8 @@
 {
   "profile": {
-    "name": "Cruz Maldonado",
-    "tagline": "TODO: one line — e.g. \"Engines, audio retrieval, and health data.\"",
-    "blurb": "TODO: two or three sentences about yourself. What you're studying or working on, what pulls you toward these projects, and what you're looking for. This is the only long piece of writing on the front page, so it's worth spending five minutes on.",
+    "name": "Cruz Maldonado Valiente",
+    "tagline": "",
+    "blurb": "Hello, I'm a third year at Emory University studying Applied Mathematics and Statistics with a minor in Comparative Literature. I am an aspiring data scientist and would love to connect with you and learn about your experiences, even if you're not a data scientist! I also really love music and reading.",
     "location": "",
     "links": {
       "github": "https://github.com/Cruzader101",
@@ -15,7 +15,7 @@
       "slug": "ps2-engine",
       "title": "PS2-Style Game Engine",
       "blurb": "A C++ engine that runs on modern PCs while deliberately self-imposing PlayStation 2 constraints.",
-      "description": "Most retro-3D projects chase the PS1 look — the wobble and warp that come from affine texture mapping. This one targets the PS2 instead: perspective-correct texturing, a real z-buffer, Gouraud vertex lighting, low internal resolution, and 16-bit dithered color. Lighting and blending happen in gamma space with no linear workflow, which is the same choice the real hardware made and the reason the darks crush and the dither reads so strongly. The working insight is that \"true PS2\" is mostly a post-processing recipe on top of an otherwise ordinary renderer: get a normal textured-and-lit scene running, then squeeze it through a low-res dithered pipe. Currently through milestone 2 — a live GL 3.3 window with a render loop, a vendored glad loader, and scalar Vec3/Vec4/Mat4 math primitives under test.",
+      "description": "I had two goals witht this project really. I wanted to learn better system design and memory management. At the same time, I was really into Silent Hill 2 at the time and really liked the whole aesthetic of the ps2 era. So I had the idea of starting to write a game engine, but trying to replicate the graphics of the ps2 and the memory constraints of it.",
       "tags": [
         "C++",
         "OpenGL",
@@ -104,50 +104,26 @@
   "now": {
     "updated": "2026-09-15",
     "book": {
-      "title": "TODO: the book you're reading",
-      "author": "TODO: author",
-      "cover": "img/covers/book-placeholder.jpg",
-      "coverAlt": "TODO: describe the cover — replace this when you swap in the real one.",
-      "rating": 4.5,
-      "note": "TODO: a sentence or two — why you picked it up, or what's landing so far. This doesn't need to be a review.",
+      "title": "Another Country",
+      "author": "James Baldwin",
+      "cover": "img/covers/another_country.jpg",
+      "coverAlt": "",
+      "rating": 4.0,
+      "note": "Baldwin really understands the interconnectendess of love and hate, especially in the context of race and sexuality. Its such a raw and violent reading experience.",
       "link": "",
       "tint": null
     },
     "album": {
-      "title": "TODO: the album",
-      "artist": "TODO: artist",
-      "cover": "img/covers/album-placeholder.jpg",
-      "coverAlt": "TODO: describe the cover — replace this when you swap in the real one.",
-      "rating": 5,
-      "note": "TODO: what you like about it. Be specific — a track, a texture, a moment.",
+      "title": "Ghosts of the Great Highway",
+      "artist": "Sun Kil Moon",
+      "cover": "img/covers/ghosts_of_the_great_highway.jpg",
+      "favorites": ["Carry Me Ohio", "Salvador Sanchez", "Duk Koo Kim"],
+      "rating": 4.0,
+      "note": "The entire album has like this dark, melancholic, drone underpinning the entire album. Mark Kozelek's voice is tired and aged now, and his lyrics have matured as well. That doesn't stop the songs from being beautiful.",
       "link": "",
       "tint": null
     }
   },
-  "archive": [
-    {
-      "type": "book",
-      "title": "TODO: a book you finished earlier",
-      "creator": "Author",
-      "finished": "2026-08",
-      "note": "One line. Delete this entry once you have real ones.",
-      "rating": 4
-    },
-    {
-      "type": "album",
-      "title": "TODO: an album from earlier",
-      "creator": "Artist",
-      "finished": "2026-07",
-      "note": "One line. Delete this entry once you have real ones.",
-      "rating": 4
-    }
-  ],
-  "posts": [
-    {
-      "slug": "hello",
-      "title": "Starting a devlog",
-      "date": "2026-09-15",
-      "summary": "An example post, here to show the format. Overwrite it with something real."
-    }
-  ]
+  "archive": [],
+  "posts": []
 }
