@@ -102,7 +102,7 @@
     }
   ],
   "now": {
-    "updated": "2026-09-15",
+    "updated": "2026-10-06",
     "book": {
       "title": "Another Country",
       "author": "James Baldwin",
@@ -114,16 +114,24 @@
       "tint": null
     },
     "album": {
-      "title": "Ghosts of the Great Highway",
-      "artist": "Sun Kil Moon",
-      "cover": "img/covers/ghosts_of_the_great_highway.jpg",
-      "favorites": ["Carry Me Ohio", "Salvador Sanchez", "Duk Koo Kim"],
-      "rating": 4.0,
-      "note": "The entire album has like this dark, melancholic, drone underpinning the entire album. Mark Kozelek's voice is tired and aged now, and his lyrics have matured as well. That doesn't stop the songs from being beautiful.",
+      "title": "Trozos de Mi Alma",
+      "artist": "Marco Antonio Solís",
+      "cover": "img/covers/trozos_de_mi_alma.jpg",
+      "rating": 3.0,
+      "note": "This is very good 90s/2000s Spanish rock, although standard for the time. In particular, Si no te Hubieras Ido is a great song with poignant lyrics, uplifting strings, and a wistful melody that really invoke heartbreak. I love the lyrics \"El frio de mi cuerpo pregunta por ti, pero no se adonde estas\".",
       "link": "",
       "tint": null
     }
   },
-  "archive": [],
+  "archive": [
+    {
+      "type": "album",
+      "title": "Ghosts of the Great Highway",
+      "creator": "Sun Kil Moon",
+      "finished": "2026-10-06",
+      "rating": 4.0,
+      "note": "The entire album has like this dark, melancholic, drone underpinning the entire album. Mark Kozelek's voice is tired and aged now, and his lyrics have matured as well. That doesn't stop the songs from being beautiful."
+    }
+  ],
   "posts": []
 }
